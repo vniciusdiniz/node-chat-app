@@ -12,22 +12,17 @@ var app             = express();
 var server          = http.createServer(app);
 var io              = socketIO(server);
 
+const {generateMessage} = require('./utils/message');
+
 app.use(express.static(publicPath));
 
 
 io.on('connection', (socket) => {
     console.log('New user connected');
 
-    socket.emit('newMessage', {
-        from: 'Admin',
-        text: 'Welcome to chat app',
-        createdAt: new Date().getTime()
-    });
-    socket.broadcast.emit('newMessage', {
-        from: 'Admin',
-        text: 'New user joined the chat',
-        createdAt: new Date().getTime()
-    });
+    socket.emit('newMessage', generateMessage('Admin','Welcome to chat app') );
+
+    socket.broadcast.emit('newMessage',  generateMessage('Admin','New user joined the chat') );
 
     socket.on('createMessage', (message) => {
         console.log('createMessage', message);
@@ -36,11 +31,7 @@ io.on('connection', (socket) => {
         //io.emit emites an event to every single connection (inluding himself)
         //socket.broadcast emits an event to every one BUT himself
 
-        io.emit('newMessage', {
-            from: message.from,
-            text: message.text,
-            createdAt: new Date().getTime()
-        });
+        io.emit('newMessage',  generateMessage( message.from, message.text) );
     });
 
     socket.on('disconnect', () => {
