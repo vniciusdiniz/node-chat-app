@@ -24,7 +24,7 @@ io.on('connection', (socket) => {
 
     socket.broadcast.emit('newMessage',  generateMessage('Admin','New user joined the chat') );
 
-    socket.on('createMessage', (message) => {
+    socket.on('createMessage', (message, callback) => {
         console.log('createMessage', message);
         
         //socket.emit emites an event to a single connection (to himself)
@@ -32,6 +32,7 @@ io.on('connection', (socket) => {
         //socket.broadcast emits an event to every one BUT himself
 
         io.emit('newMessage',  generateMessage( message.from, message.text) );
+        callback('This is from the server');
     });
 
     socket.on('disconnect', () => {
